@@ -6,7 +6,7 @@
 /*   By: fercarva <fercarva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/13 00:51:45 by fercarva          #+#    #+#             */
-/*   Updated: 2026/11/15 02:08:38 by fercarva         ###   ########.fr       */
+/*   Updated: 2026/11/17 00:30:53 by fercarva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ char	*ft_read_stash(char *stash, char *buffer, int fd)
 	return (stash);
 }
 
-char	*get_line_final(char *stash[])
+char	*get_line_final(char **stash)
 {
 	char	*line;
 	char	*remain;
@@ -115,7 +115,7 @@ char	*get_line_final(char *stash[])
 
 char	*get_next_line(int fd)
 {
-	static char	*stash[1024];
+	static char	*stash;
 	char		*buffer;
 
 	if (fd < 0 || fd >= 1024)
@@ -123,11 +123,63 @@ char	*get_next_line(int fd)
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
 	{
-		free(stash[fd]);
-		stash[fd] = NULL;
+		free(stash);
+		stash = NULL;
 		return (NULL);
 	}
-	stash[fd] = ft_read_stash(stash[fd], buffer, fd);
+	stash = ft_read_stash(stash, buffer, fd);
 	free(buffer);
-	return (get_line_final(&stash[fd]));
+	return (get_line_final(&stash));
+}
+
+/* #include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
+int main()
+{
+	int fd1 = open("test.txt", O_RDONLY);
+	char *l = get_next_line(fd1);
+	
+	while (l)
+	{
+		printf("%s", l);
+		free (l);
+		l = get_next_line(fd1);
+	}
+	close(fd1);
+} */
+
+#include "get_next_line.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
+int	main(void)
+{
+	int		fd1;
+	int		fd2;
+	char	*l1;
+	char	*l2;
+
+	fd1 = open("test.txt", O_RDONLY);
+	fd2 = open("test1.txt", O_RDONLY);
+	if (fd1 < 0 || fd2 < 0)
+		return (perror("open"), 1);
+	l1 = get_next_line(fd1);
+	l2 = get_next_line(fd2);
+	while (l1 || l2)
+	{
+		if (l1)
+			printf("%s", l1);
+		if (l2)
+			printf("%s", l2);
+		free(l1);
+		free(l2);
+		l1 = get_next_line(fd1);
+		l2 = get_next_line(fd2);
+	}
+	close(fd1);
+	close(fd2);
+	return (0);
 }

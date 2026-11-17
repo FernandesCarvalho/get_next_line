@@ -6,7 +6,7 @@
 /*   By: fercarva <fercarva@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/13 00:51:45 by fercarva          #+#    #+#             */
-/*   Updated: 2026/11/15 02:57:43 by fercarva         ###   ########.fr       */
+/*   Updated: 2026/11/17 00:31:40 by fercarva         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,44 +132,41 @@ char	*get_next_line(int fd)
 	return (get_line_final(&stash[fd]));
 }
 
-/*
+
 #include "get_next_line_bonus.h"
 #include <stdio.h>
 #include <fcntl.h>
 
+#include "get_next_line.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+
 int	main(void)
 {
-	int		fd;
-	char	*line;
+	int		fd1;
+	int		fd2;
+	char	*l1;
+	char	*l2;
 
-	fd = open("test.txt", O_RDONLY);
-	if (fd < 0)
+	fd1 = open("test.txt", O_RDONLY);
+	fd2 = open("test1.txt", O_RDONLY);
+	if (fd1 < 0 || fd2 < 0)
+		return (perror("open"), 1);
+	l1 = get_next_line(fd1);
+	l2 = get_next_line(fd2);
+	while (l1 || l2)
 	{
-		perror("open");
-		return (1);
+		if (l1)
+			printf("%s", l1);
+		if (l2)
+			printf("%s", l2);
+		free(l1);
+		free(l2);
+		l1 = get_next_line(fd1);
+		l2 = get_next_line(fd2);
 	}
-	line = get_next_line(fd);
-	while (line)
-	{
-		printf("%s", line);
-		free(line);
-		line = get_next_line(fd);
-	}
-	close(fd);
-	fd = open("test1.txt", O_RDONLY);
-	if (fd < 0)
-	{
-		perror("open");
-		return (1);
-	}
-	line = get_next_line(fd);
-	while (line)
-	{
-		printf("%s", line);
-		free(line);
-		line = get_next_line(fd);
-	}
-	close(fd);
+	close(fd1);
+	close(fd2);
 	return (0);
 }
-*/
